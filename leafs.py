@@ -8,25 +8,7 @@ import matplotlib
 from PIL import Image, ImageDraw
 from math import sqrt
 import hcluster
-
-
-def DTWDistance(s1, s2):
-    DTW={}
-    #print len(s1), len(s2)
-
-    for i in range(len(s1)):
-        DTW[(i, -1)] = float('inf')
-    for i in range(len(s2)):
-        DTW[(-1, i)] = float('inf')
-    DTW[(-1,-1)] = 0
-
-    for i in range(len(s1)):
-        for j in range(len(s2)):
-            dist = abs(s1[i] - s2[j])
-            DTW[(i,j)] = dist + min(DTW[(i-1,j)], DTW[(i, j-1)], DTW[(i-1, j-1)])
-
-    return DTW[len(s1)-1, len(s2)-1]
-
+from fastdtw import dtw
 
 def p2pdistance(x1,y1,x2,y2):
     return sqrt((x2-x1)**2 + (y2-y1)**2)
@@ -61,7 +43,7 @@ if __name__ == '__main__':
         images_ts.append(ts)
 
     print "Gerando a árvore"
-    tree = hcluster.hcluster(images_ts, distance=DTWDistance)
+    tree = hcluster.hcluster(images_ts, distance=dtw)
 
     print "Salvando a arvore"
     hcluster.drawdendrogram(tree, imlist, jpeg='saida.jpg')
