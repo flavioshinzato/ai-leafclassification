@@ -40,6 +40,7 @@ if __name__ == '__main__':
         M = cv2.moments(img)
         centroid_x = int(M['m10']/M['m00'])
         centroid_y = int(M['m01']/M['m00'])
+        print centroid_y, centroid_x
 
         ts = []
 
