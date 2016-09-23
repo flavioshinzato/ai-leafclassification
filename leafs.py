@@ -1,3 +1,5 @@
+# encoding=utf-8
+
 import numpy as np
 import pandas as pd
 import cv2 as cv2
@@ -5,9 +7,12 @@ import os
 import matplotlib
 from PIL import Image, ImageDraw
 from math import sqrt
+import hcluster
+
 
 def DTWDistance(s1, s2):
     DTW={}
+    #print len(s1), len(s2)
 
     for i in range(len(s1)):
         DTW[(i, -1)] = float('inf')
@@ -29,8 +34,10 @@ def p2pdistance(x1,y1,x2,y2):
 
 if __name__ == '__main__':
     images_ts = []
+    imlist = []
 
     for filename in os.listdir('./images/'):
+        imlist.append(filename)
         img = cv2.imread(os.path.join('./images/',filename), cv2.CV_LOAD_IMAGE_GRAYSCALE)
         thresh = 127
         maxValue = 255
@@ -40,7 +47,6 @@ if __name__ == '__main__':
         M = cv2.moments(img)
         centroid_x = int(M['m10']/M['m00'])
         centroid_y = int(M['m01']/M['m00'])
-        print centroid_y, centroid_x
 
         ts = []
 
@@ -53,3 +59,9 @@ if __name__ == '__main__':
             #print ts
 
         images_ts.append(ts)
+
+    print "Gerando a árvore"
+    tree = hcluster.hcluster(images_ts, distance=DTWDistance)
+
+    print "Salvando a arvore"
+    hcluster.drawdendrogram(tree, imlist, jpeg='saida.jpg')
